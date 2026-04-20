@@ -46,19 +46,21 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                bat 'docker stop %IMAGE_NAME% > nul 2>&1'
-                bat 'docker rm %IMAGE_NAME% > nul 2>&1'
-                bat 'docker run --name %IMAGE_NAME% %IMAGE_NAME%'
+                bat '''
+                docker stop %IMAGE_NAME% > nul 2>&1 || exit /b 0
+                docker rm %IMAGE_NAME% > nul 2>&1 || exit /b 0
+                docker run --name %IMAGE_NAME% %IMAGE_NAME%
+                '''
             }
         }
     }
 
     post {
         success {
-            echo '🔥 PIPELINE SUCCESSFUL'
+            echo 'PIPELINE SUCCESSFUL'
         }
         failure {
-            echo '❌ PIPELINE FAILED'
+            echo 'PIPELINE FAILED'
         }
     }
 }
