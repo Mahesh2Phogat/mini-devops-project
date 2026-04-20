@@ -40,7 +40,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t %IMAGE_NAME% .'
+                bat 'docker build --no-cache -t %IMAGE_NAME% .'
             }
         }
 
@@ -49,7 +49,7 @@ pipeline {
                 bat '''
                 docker stop %IMAGE_NAME% > nul 2>&1 || exit /b 0
                 docker rm %IMAGE_NAME% > nul 2>&1 || exit /b 0
-                docker run --name %IMAGE_NAME% %IMAGE_NAME%
+                docker run -d --name %IMAGE_NAME% %IMAGE_NAME%
                 '''
             }
         }
@@ -57,10 +57,10 @@ pipeline {
 
     post {
         success {
-            echo 'PIPELINE SUCCESSFUL'
+            echo 'PIPELINE SUCCESSFUL 🎉'
         }
         failure {
-            echo 'PIPELINE FAILED'
+            echo 'PIPELINE FAILED ❌'
         }
     }
 }
