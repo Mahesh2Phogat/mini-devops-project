@@ -1,0 +1,4 @@
+build/
+httplib.h
+*.o
+*.out
