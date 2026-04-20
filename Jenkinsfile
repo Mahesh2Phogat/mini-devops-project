@@ -19,12 +19,6 @@ pipeline {
             }
         }
 
-        stage('Clean Build Folder') {
-            steps {
-                bat 'if exist build rmdir /s /q build'
-            }
-        }
-
         stage('Build') {
             steps {
                 bat 'cmake -G "MinGW Makefiles" -B build -S .'
@@ -51,6 +45,14 @@ pipeline {
                 docker rm %IMAGE_NAME% > nul 2>&1 || exit /b 0
                 docker run -d --name %IMAGE_NAME% %IMAGE_NAME%
                 '''
+            }
+        }
+
+        // 🔥 THIS IS THE KEY ADDITION
+        stage('Show Docker Result') {
+            steps {
+                bat 'docker images'
+                bat 'docker ps'
             }
         }
     }
