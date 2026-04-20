@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'mini-devops-cpp-app'
+        IMAGE_NAME = "mini-devops-cpp-app"
     }
 
     stages {
@@ -34,7 +34,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                bat 'docker build --no-cache -t %IMAGE_NAME% .'
+                bat 'docker build -t %IMAGE_NAME% .'
             }
         }
 
@@ -42,9 +42,17 @@ pipeline {
             steps {
                 bat 'docker stop %IMAGE_NAME% > nul 2>&1'
                 bat 'docker rm %IMAGE_NAME% > nul 2>&1'
-                bat 'docker run --rm %IMAGE_NAME%'
+                bat 'docker run --name %IMAGE_NAME% %IMAGE_NAME%'
             }
         }
     }
-}
 
+    post {
+        success {
+            echo '🔥 SUCCESS: Everything is working!'
+        }
+        failure {
+            echo '❌ FAILED: Check logs'
+        }
+    }
+}
