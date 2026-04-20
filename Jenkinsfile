@@ -14,12 +14,21 @@ pipeline {
             }
         }
 
-        stage('Download httplib header') {
+        stage('Download Dependency') {
             steps {
                 bat '''
                 curl -L https://raw.githubusercontent.com/yhirose/cpp-httplib/master/httplib.h -o httplib.h
                 '''
-                echo 'httplib.h downloaded'
+                echo 'Dependency downloaded'
+            }
+        }
+
+        stage('Clean Build Folder') {
+            steps {
+                bat '''
+                if exist build rmdir /s /q build
+                '''
+                echo 'Old build folder removed'
             }
         }
 
@@ -29,7 +38,7 @@ pipeline {
                 cmake -G "MinGW Makefiles" -B build -S .
                 cmake --build build
                 '''
-                echo 'C++ build successful'
+                echo 'Build successful'
             }
         }
 
@@ -41,11 +50,11 @@ pipeline {
                 build\\test_app.exe
                 taskkill /IM app.exe /F > nul 2>&1
                 '''
-                echo 'All tests passed'
+                echo 'Tests passed'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Docker Build') {
             steps {
                 bat '''
                 docker build -t %IMAGE_NAME% .
@@ -61,17 +70,17 @@ pipeline {
                 docker rm %IMAGE_NAME% > nul 2>&1
                 docker run -d --name %IMAGE_NAME% -p 5000:5000 %IMAGE_NAME%
                 '''
-                echo 'Container is live on port 5000'
+                echo 'App running at http://localhost:5000'
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo ' PIPELINE chl rhi hai SHI se'
         }
         failure {
-            echo 'Pipeline failed — check the logs above'
+            echo ' PIPELINE FAILED  kuch toh gadbad hai upar'
         }
     }
 }
