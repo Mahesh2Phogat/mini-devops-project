@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'Lazy2Code'
-        IMAGE_NAME     = 'mini-devops-cpp-app'
+        IMAGE_NAME = 'mini-devops-cpp-app'
     }
 
     stages {
@@ -27,7 +26,7 @@ pipeline {
         stage('Build') {
             steps {
                 bat '''
-                cmake -B build -S .
+                cmake -G "MinGW Makefiles" -B build -S .
                 cmake --build build
                 '''
                 echo 'C++ build successful'
@@ -38,9 +37,9 @@ pipeline {
             steps {
                 bat '''
                 start /B build\\app.exe
-                timeout /t 2
+                timeout /t 2 > nul
                 build\\test_app.exe
-                taskkill /IM app.exe /F
+                taskkill /IM app.exe /F > nul 2>&1
                 '''
                 echo 'All tests passed'
             }
@@ -48,24 +47,19 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat "docker build -t %DOCKERHUB_USER%/%IMAGE_NAME%:latest ."
+                bat '''
+                docker build -t %IMAGE_NAME% .
+                '''
                 echo 'Docker image built'
             }
         }
 
-        // OPTIONAL (skip for now if you don’t have DockerHub credentials)
-        // stage('Push to Docker Hub') {
-        //     steps {
-        //         echo 'Skipping push for now'
-        //     }
-        // }
-
-        stage('Deploy Container') {
+        stage('Run Container') {
             steps {
                 bat '''
-                docker stop %IMAGE_NAME% || exit 0
-                docker rm %IMAGE_NAME% || exit 0
-                docker run -d --name %IMAGE_NAME% -p 5000:5000 %DOCKERHUB_USER%/%IMAGE_NAME%:latest
+                docker stop %IMAGE_NAME% > nul 2>&1
+                docker rm %IMAGE_NAME% > nul 2>&1
+                docker run -d --name %IMAGE_NAME% -p 5000:5000 %IMAGE_NAME%
                 '''
                 echo 'Container is live on port 5000'
             }
@@ -73,7 +67,11 @@ pipeline {
     }
 
     post {
-        success { echo 'Pipeline completed successfully!' }
-        failure { echo 'Pipeline failed — check the logs above' }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed — check the logs above'
+        }
     }
 }
