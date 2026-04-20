@@ -1,16 +1,11 @@
 FROM ubuntu:22.04
 
-RUN apt-get update && apt-get install -y g++ cmake
+RUN apt-get update && apt-get install -y g++
 
 WORKDIR /app
 
 COPY . .
 
-# ❌ REMOVE OLD BUILD CACHE (IMPORTANT FIX)
-RUN rm -rf build
+RUN g++ app.cpp -o app
 
-# ✅ FRESH BUILD
-RUN cmake -B build -S .
-RUN cmake --build build
-
-CMD ["./build/app"]
+CMD ["./app"]
