@@ -2,19 +2,20 @@ cmake_minimum_required(VERSION 3.10)
 
 project(MiniDevOpsApp)
 
-# Set C++ standard
+# Force C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Find threading support
+# Add compile flags manually (IMPORTANT for old MinGW)
+add_compile_options(-std=gnu++17 -pthread)
+
+# Threads
 find_package(Threads REQUIRED)
 
-# Main app
+# Executables
 add_executable(app app.cpp)
-
-# Test app
 add_executable(test_app test_app.cpp)
 
-# Link threading
-target_link_libraries(app Threads::Threads)
-target_link_libraries(test_app Threads::Threads)
+# Link libraries
+target_link_libraries(app Threads::Threads ws2_32)
+target_link_libraries(test_app Threads::Threads ws2_32)
