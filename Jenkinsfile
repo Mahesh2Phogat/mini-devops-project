@@ -42,8 +42,9 @@ pipeline {
         stage('Docker Build') {
             steps {
                 bat '''
-                docker build -t %IMAGE_NAME% .
+                docker build --no-cache -t %IMAGE_NAME% .
                 '''
+                echo 'Docker image built (no cache)'
             }
         }
 
@@ -54,16 +55,17 @@ pipeline {
                 docker rm %IMAGE_NAME% > nul 2>&1
                 docker run -d --name %IMAGE_NAME% %IMAGE_NAME%
                 '''
+                echo 'Container running'
             }
         }
     }
 
     post {
         success {
-            echo 'bn gyi baat'
+            echo '🎉 PIPELINE SUCCESSFUL'
         }
         failure {
-            echo 'phir se dikat ohh noo'
+            echo '❌ PIPELINE FAILED'
         }
     }
 }
