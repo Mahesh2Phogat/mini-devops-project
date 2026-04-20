@@ -7,13 +7,19 @@ pipeline {
 
     stages {
 
+        stage('Force Clean') {
+            steps {
+                deleteDir()
+            }
+        }
+
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Clean') {
+        stage('Clean Build Folder') {
             steps {
                 bat 'if exist build rmdir /s /q build'
             }
@@ -49,10 +55,10 @@ pipeline {
 
     post {
         success {
-            echo '🔥 SUCCESS: Everything is working!'
+            echo '🔥 PIPELINE SUCCESSFUL'
         }
         failure {
-            echo '❌ FAILED: Check logs'
+            echo '❌ PIPELINE FAILED'
         }
     }
 }
