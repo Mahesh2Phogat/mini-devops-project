@@ -42,8 +42,9 @@ pipeline {
             steps {
                 bat 'docker stop %IMAGE_NAME% > nul 2>&1'
                 bat 'docker rm %IMAGE_NAME% > nul 2>&1'
-                bat 'docker run --rm %IMAGE_NAME%
+                bat 'docker run --rm %IMAGE_NAME%'
             }
         }
     }
 }
+
