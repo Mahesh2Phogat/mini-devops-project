@@ -1,13 +1,17 @@
 #include <iostream>
+using namespace std;
+
+int add(int a, int b) { return a + b; }
+int sub(int a, int b) { return a - b; }
 
 int main() {
-    std::cout << "Test running..." << std::endl;
+    cout << "Running tests...\n";
 
-    if (1 + 1 == 2) {
-        std::cout << "Test PASSED" << std::endl;
+    if(add(2,3) == 5 && sub(5,3) == 2) {
+        cout << "All tests PASSED\n";
         return 0;
     } else {
-        std::cout << "Test FAILED" << std::endl;
+        cout << "Tests FAILED\n";
         return 1;
     }
 }
