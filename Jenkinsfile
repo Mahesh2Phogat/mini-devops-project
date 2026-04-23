@@ -20,12 +20,6 @@ pipeline {
             }
         }
 
-        stage('Build C++ App') {
-            steps {
-                bat 'g++ app.cpp -o app.exe -std=c++17 -pthread'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 bat 'docker build -t %DOCKER_USER%/%IMAGE_NAME% .'
@@ -34,36 +28,18 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USERNAME',
-                    passwordVariable: 'DOCKER_PASSWORD'
-                )]) {
-                    bat '''
-                    echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
-                    docker push %DOCKER_USER%/%IMAGE_NAME%
-                    '''
-                }
+                bat 'docker push %DOCKER_USER%/%IMAGE_NAME%'
             }
         }
 
         stage('Run Container') {
             steps {
                 bat '''
-                docker stop %IMAGE_NAME% > nul 2>&1 || exit /b 0
-                docker rm %IMAGE_NAME% > nul 2>&1 || exit /b 0
-                docker run -d -p 5000:5000 --name %IMAGE_NAME% %DOCKER_USER%/%IMAGE_NAME%
+                docker stop myapp > nul 2>&1 || exit /b 0
+                docker rm myapp > nul 2>&1 || exit /b 0
+                docker run -d -p 5000:5000 --name myapp %DOCKER_USER%/%IMAGE_NAME%
                 '''
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'PIPELINE SUCCESSFUL 🚀'
-        }
-        failure {
-            echo 'PIPELINE FAILED ❌'
         }
     }
 }
