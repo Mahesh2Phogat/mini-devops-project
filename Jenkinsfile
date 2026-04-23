@@ -22,7 +22,7 @@ pipeline {
 
         stage('Build C++ App') {
             steps {
-                bat 'g++ app.cpp -o app.exe -pthread'
+                bat 'g++ app.cpp -o app.exe -std=c++17 -pthread'
             }
         }
 
