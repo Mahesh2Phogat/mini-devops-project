@@ -1,10 +1,4 @@
 build/
-<<<<<<< HEAD
 *.o
 *.out
 httplib.h
-=======
-httplib.h
-*.o
-*.out
->>>>>>> d70faac4aa942c5fd61b373150ec7f3a2ee8f0cb

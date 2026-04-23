@@ -4,7 +4,7 @@
 This project demonstrates a CI/CD pipeline using Jenkins, Docker, and CMake for a C++ calculator application.
 
 ## Features
-- Menu-based calculator (Add, Subtract, Multiply, Divide)
+- Menu-based calculator
 - Automated testing
 - Docker containerization
 - Jenkins CI/CD pipeline
