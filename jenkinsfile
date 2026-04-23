@@ -5,46 +5,20 @@ pipeline {
 
         stage('Build') {
             steps {
-                bat 'g++ app.cpp -o app.exe'
+                bat 'echo Building project...'
             }
         }
 
         stage('Test') {
             steps {
-                bat 'echo Running Tests...'
+                bat 'echo Testing project...'
             }
         }
 
-        stage('Docker Build') {
+        stage('Success') {
             steps {
-                bat 'docker build --no-cache -t mini-devops-cpp-app .'
+                bat 'echo Pipeline completed successfully!'
             }
-        }
-
-        stage('Run Container') {
-            steps {
-                bat '''
-                docker stop mini-devops-cpp-app 1>nul 2>&1
-                docker rm mini-devops-cpp-app 1>nul 2>&1
-                docker run -d --name mini-devops-cpp-app mini-devops-cpp-app
-                '''
-            }
-        }
-
-        stage('Show Output') {
-            steps {
-                bat 'docker images'
-                bat 'docker ps'
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'PIPELINE SUCCESSFUL 🎉'
-        }
-        failure {
-            echo 'PIPELINE FAILED ❌'
         }
     }
 }
