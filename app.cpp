@@ -1,6 +1,5 @@
 #include "httplib.h"
 #include <iostream>
-
 using namespace std;
 
 int main() {
