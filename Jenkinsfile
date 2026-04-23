@@ -20,6 +20,15 @@ pipeline {
             }
         }
 
+        // ✅ ADD THIS FIX
+        stage('Download httplib') {
+            steps {
+                bat '''
+                curl -L https://raw.githubusercontent.com/yhirose/cpp-httplib/master/httplib.h -o httplib.h
+                '''
+            }
+        }
+
         stage('Build C++ App') {
             steps {
                 bat 'g++ app.cpp -o app.exe'
