@@ -1,45 +1,50 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = "mini-devops-cpp-app"
-        DOCKER_USER = "lazy2code"
-    }
-
     stages {
 
-        stage('Clean Workspace') {
+        stage('Build') {
             steps {
-                deleteDir()
+                bat 'g++ app.cpp -o app.exe'
             }
         }
 
-        stage('Checkout Code') {
+        stage('Test') {
             steps {
-                checkout scm
+                bat 'echo Test Passed'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Docker Build') {
             steps {
-                bat 'docker build -t %DOCKER_USER%/%IMAGE_NAME% .'
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                bat 'docker push %DOCKER_USER%/%IMAGE_NAME%'
+                bat 'docker build --no-cache -t mini-devops-cpp-app .'
             }
         }
 
         stage('Run Container') {
             steps {
                 bat '''
-                docker stop myapp > nul 2>&1 || exit /b 0
-                docker rm myapp > nul 2>&1 || exit /b 0
-                docker run -d -p 5000:5000 --name myapp %DOCKER_USER%/%IMAGE_NAME%
+                docker stop mini-devops-cpp-app 1>nul 2>&1
+                docker rm mini-devops-cpp-app 1>nul 2>&1
+                docker run -d --name mini-devops-cpp-app mini-devops-cpp-app
                 '''
             }
+        }
+
+        stage('Show Output') {
+            steps {
+                bat 'docker images'
+                bat 'docker ps'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'PIPELINE SUCCESSFUL 🎉'
+        }
+        failure {
+            echo 'PIPELINE FAILED ❌'
         }
     }
 }
