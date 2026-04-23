@@ -3,61 +3,64 @@ pipeline {
 
     environment {
         IMAGE_NAME = "mini-devops-cpp-app"
+        DOCKER_USER = "lazy2code"
     }
 
     stages {
 
-        stage('Clean') {
+        stage('Clean Workspace') {
             steps {
                 deleteDir()
             }
         }
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Build') {
+        stage('Build C++ App') {
             steps {
                 bat 'g++ app.cpp -o app.exe'
             }
         }
 
-        stage('Test') {
+        stage('Build Docker Image') {
             steps {
-                bat 'echo Test Passed'
+                bat 'docker build -t %DOCKER_USER%/%IMAGE_NAME% .'
             }
         }
 
-        stage('Docker Build') {
+        stage('Push Docker Image') {
             steps {
-                bat 'docker build --no-cache -t %IMAGE_NAME% .'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+                    bat '''
+                    echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
+                    docker push %DOCKER_USER%/%IMAGE_NAME%
+                    '''
+                }
             }
         }
 
         stage('Run Container') {
             steps {
                 bat '''
-                docker stop %IMAGE_NAME% > nul 2>&1
-                docker rm %IMAGE_NAME% > nul 2>&1
-                docker run -d --name %IMAGE_NAME% %IMAGE_NAME%
+                docker stop %IMAGE_NAME% > nul 2>&1 || exit /b 0
+                docker rm %IMAGE_NAME% > nul 2>&1 || exit /b 0
+                docker run -d -p 5000:5000 --name %IMAGE_NAME% %DOCKER_USER%/%IMAGE_NAME%
                 '''
-            }
-        }
-
-        stage('Show Output') {
-            steps {
-                bat 'docker images'
-                bat 'docker ps'
             }
         }
     }
 
     post {
         success {
-            echo 'PIPELINE SUCCESSFUL 🎉'
+            echo 'PIPELINE SUCCESSFUL 🚀'
         }
         failure {
             echo 'PIPELINE FAILED ❌'

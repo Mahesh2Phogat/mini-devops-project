@@ -1,11 +1,16 @@
-FROM ubuntu:22.04
+FROM ubuntu:latest
 
-RUN apt-get update && apt-get install -y g++
+RUN apt update && apt install -y g++ curl
 
 WORKDIR /app
 
 COPY . .
 
-RUN g++ app.cpp -o app
+# Download httplib
+RUN curl -L https://raw.githubusercontent.com/yhirose/cpp-httplib/master/httplib.h -o httplib.h
+
+RUN g++ app.cpp -o app -pthread
+
+EXPOSE 5000
 
 CMD ["./app"]
